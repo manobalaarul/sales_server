@@ -107,7 +107,7 @@ export async function UpdateSavedOrderController(request, response) {
       productList.length === 0 ||
       !customer_name ||
       !customer_phone ||
-      !customer_address||
+      !customer_address ||
       !total_qty ||
       !sub_total ||
       !gst ||
@@ -149,20 +149,31 @@ export async function UpdateSavedOrderController(request, response) {
 
 export async function GetOrderController(request, response) {
   try {
-    let { page, limit } = request.body;
-    // Set default values if not provided
+    let { page, limit, search } = request.body;
+
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 10;
-
     const skip = (page - 1) * limit;
 
+    // Optional filtering logic
+    let filter = {};
+
+    if (search && search.trim() !== "") {
+      filter = {
+        $or: [
+          { customer_phone: { $regex: search, $options: "i" } },
+          { customer_name: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+
     const [orders, totalCount] = await Promise.all([
-      OrderModel.find()
-        .sort({ date: -1 })
+      OrderModel.find(filter)
+        .sort({ date: -1, _id: -1 }) // Sort by date desc, then by _id desc to break ties
         .skip(skip)
         .limit(limit)
         .populate("productList.productId"),
-      OrderModel.countDocuments(),
+      OrderModel.countDocuments(filter),
     ]);
 
     return response.json({

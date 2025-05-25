@@ -13,7 +13,7 @@ const orderRouter = express.Router();
 
 orderRouter.post("/save_order", SaveOrderController);
 orderRouter.post("/update_order", UpdateSavedOrderController);
-orderRouter.get("/get_order", GetOrderController);
+orderRouter.post("/get_order", GetOrderController);
 orderRouter.post("/get_order_detail", GetOrderDetailController);
 orderRouter.post("/confirm_order", ConfirmOrderController);
 orderRouter.post("/cancel_order", CancelOrderController);

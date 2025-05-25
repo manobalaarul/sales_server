@@ -69,5 +69,18 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
+orderSchema.index(
+  {
+    customer_name: "text",
+    customer_phone: "text",
+  },
+  {
+    weights: {
+      customer_name: 10,
+      customer_phone: 5,
+    },
+  }
+);
+
 const OrderModel = mongoose.model("orders", orderSchema);
 export default OrderModel;
